@@ -1,22 +1,17 @@
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
+const Operator = require("../models/Operator");
+// const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../../constants");
+const { JWT_SECRET } = require("../constants");
 
-async function addUser(email, password) {
-  const passwordHash = await bcrypt.hash(password, 10);
-  await User.create({ email, password: passwordHash });
-}
+async function loginOpetator(email, password) {
+  const operator = await Operator.findOne({ email });
 
-async function loginUser(email, password) {
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new Error("User is not found");
+  if (!operator) {
+    throw new Error("Operator is not found");
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
-
+  // const isPasswordCorrect = await bcrypt.compare(password, operator.password);
+  const isPasswordCorrect = password === operator.password;
   if (!isPasswordCorrect) {
     throw new Error("Wrong password");
   }
@@ -24,4 +19,4 @@ async function loginUser(email, password) {
   return jwt.sign({ email }, JWT_SECRET, { expiresIn: "30d" });
 }
 
-module.exports = { addUser, loginUser };
+module.exports = { loginOpetator };

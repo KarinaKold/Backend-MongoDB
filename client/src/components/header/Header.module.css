@@ -1,0 +1,13 @@
+header {
+  max-width: 100vw;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: flex-start;
+  padding: 20px 0 10px 200px;
+  font-size: 18px;
+}
+
+.navbar a {
+  margin: 20px;
+}

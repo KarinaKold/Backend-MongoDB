@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Input } from "../../components";
+import { formatPhoneNumber } from "../../utils";
 import styles from "./Form.module.css";
 
 export const Form = () => {
@@ -10,39 +11,30 @@ export const Form = () => {
   const [message, setMessage] = useState("");
 
   const handlePhoneChange = (e) => {
-    const input = e.target.value;
-    const formattedPhone = input
-      .replace(/^(d{1})(d{3})(d{3})(d{2})(d{2})$/, "+$1 ($2) $3-$4-$5")
-      .replace(/^(\+7 (d{3})) (d{3})-(d{2})-(d{2}).*/, "$1 $2-$3-$4");
-
+    const value = e.target.value;
+    const formattedPhone = formatPhoneNumber(value);
     setPhone(formattedPhone);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const data = { name, phone, problem };
 
-    try {
-      const response = await fetch("http://localhost:5000/api/requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name, phone, problem }),
-      });
+    const response = await fetch("/api/form", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+    });
 
-      if (response.ok) {
-        setMessage("Заявка успешно отправлена!");
-        setName("");
-        setPhone("");
-        setProblem("");
-      } else {
-        throw new Error("Ошибка при отправке заявки");
-      }
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
+    if (response.ok) {
       setLoading(false);
+      setName("");
+      setPhone("");
+      setProblem("");
+      setMessage("Заявка успешно отправлена!");
+    } else {
+      setMessage("Error!");
     }
   };
 

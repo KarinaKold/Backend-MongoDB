@@ -10,9 +10,19 @@ export const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    // Логика аутентификации (проверка на сервере)
-    // Если успешная аутентификация:
-    navigate("/table");
+
+    const response = await fetch("/api/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+    });
+
+    const responseData = await response.json();
+
+    if (responseData.ok) {
+      navigate("/table");
+    }
   };
 
   return (
@@ -37,6 +47,7 @@ export const Login = () => {
       <button className={styles.button} type="submit">
         Войти
       </button>
+      {/* {errorMessage && <span className={styles.error}>{errorMessage}</span>} */}
     </form>
   );
 };

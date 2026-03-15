@@ -1,14 +1,13 @@
 import { Link } from "react-router";
+import styles from "./Header.module.css";
 
 export const Header = () => {
   return (
     <header>
-      <div>
-        <nav>
-          <Link to={"/"}>Home</Link>
-          <Link to={"/login"}>login</Link>
-        </nav>
-      </div>
+      <nav className={styles.navbar}>
+        <Link to={"/"}>Home</Link>
+        <Link to={"/login"}>Login</Link>
+      </nav>
     </header>
   );
 };

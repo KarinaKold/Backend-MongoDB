@@ -12,7 +12,6 @@ const UserSchema = mongoose.Schema(
     },
     problem: {
       type: String,
-      required: true,
     },
   },
   { timestamps: true },

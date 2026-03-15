@@ -16,10 +16,6 @@ const OperatorSchema = mongoose.Schema({
     required: true,
     minlength: 4,
   },
-  role: {
-    type: Number,
-    default: roles.USER,
-  },
 });
 
 const Operator = mongoose.model("Operator", OperatorSchema);

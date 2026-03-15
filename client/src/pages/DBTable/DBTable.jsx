@@ -1,28 +1,38 @@
 import { useEffect, useState } from "react";
-import styles from "./DBTable.module.css";
+import { useNavigate } from "react-router";
 import { Input } from "../../components";
+import styles from "./DBTable.module.css";
 
 export const DBTable = () => {
   const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+  // const [page, setPage] = useState(1);
+  // const [lastPage, setLastPage] = useState(1);
+  // const [searchPhrase, setSearchPhrase] = useState("");
+  // const [shouldSearch, setshouldSearch] = useState(false);
 
   useEffect(() => {
-    const fetchRequests = async () => {
-      const response = await fetch("http://localhost:5000/api/requests");
-      const data = await response.json();
-      setRequests(data);
-      setLoading(false);
-    };
-
-    fetchRequests();
-  }, []);
+    fetch(
+      "/api/table",
+      // `/api/table?search=${searchPhrase}&page=${page}&limit=5`,
+    )
+      .then((response) => response.json())
+      .then(({ data, ok }) => {
+        if (ok) {
+          setRequests(data);
+        } else {
+          navigate("/login");
+        }
+      });
+  }, [navigate]);
 
   // if (loading) return <p>Loading...</p>;
 
-  const filteredRequests = requests.filter((request) =>
-    request.name.toLowerCase().includes(search.toLowerCase()),
-  );
+  // const filteredRequests = requests.filter((request) =>
+  //   request.name.toLowerCase().includes(search.toLowerCase()),
+  // );
 
   return (
     <div className={styles.tableContainer}>
@@ -43,7 +53,7 @@ export const DBTable = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredRequests.map((request) => (
+          {requests.map((request) => (
             <tr key={request._id}>
               <td>{request.name}</td>
               <td>{request.phone}</td>

@@ -12,8 +12,4 @@ export const router = createBrowserRouter([
       { path: "/table", element: <DBTable /> },
     ],
   },
-  // {
-  // 	path: '*',
-  // 	element: <NotFoundPage />,
-  // },
 ]);
