@@ -13,6 +13,7 @@ function auth(req, res, next) {
 
     next();
   } catch (e) {
+    res.send({ error: e.message || 'Token error' })
     res.redirect("/login");
   }
 }

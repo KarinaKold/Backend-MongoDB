@@ -11,7 +11,7 @@
     "node",
     "javascript"
   ],
-  "author": "Vladilen Minin <v@mail.ru>",
+  "author": "Karina Kold",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",

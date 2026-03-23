@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Input } from "../../components";
-import { formatPhoneNumber } from "../../utils";
+import { formatPhoneNumber, request } from "../../utils";
 import styles from "./Form.module.css";
 
 export const Form = () => {
@@ -19,15 +19,20 @@ export const Form = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const data = { name, phone, problem };
+    // const data = { name, phone, problem };
 
-    const response = await fetch("/api/form", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" },
+    const response = request("/users/user", "POST", {
+      name,
+      phone,
+      problem,
+    }).then(({ error }) => {
+      if (error) {
+        // setServerError(`Ошибка запроса ${error}`);
+        return;
+      }
     });
 
-    if (response.ok) {
+    if (response) {
       setLoading(false);
       setName("");
       setPhone("");
