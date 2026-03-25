@@ -8,7 +8,7 @@ router.post("/login", async (req, res) => {
     const token = await loginOpetator(req.body.email, req.body.password);
     res
       .cookie("token", token, { httpOnly: true })
-      .send({ error: null, user: mapUser(user) });
+      .send({ error: null, data: req.body.email });
   } catch (error) {
     res.send({ error: error.message || "Unknown error" });
   }

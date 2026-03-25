@@ -13,10 +13,6 @@
   border-radius: 12px;
 }
 
-.button {
-  color: white;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  width: 160px;
+.error {
+  color: #e74c3c;
 }

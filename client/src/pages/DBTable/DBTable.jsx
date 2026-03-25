@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router";
+// import { useNavigate } from "react-router";
 import { Input, Pagination } from "../../components";
 import { debounce, request } from "../../utils";
 import styles from "./DBTable.module.css";
@@ -10,21 +10,41 @@ export const DBTable = () => {
   // const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  // const [search, setSearch] = useState("");
+  const [error, setError] = useState(null);
+
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [searchPhrase, setSearchPhrase] = useState("");
-  const [shouldSearch, setShouldSearch] = useState(false);
+  const [shouldSearch, setShouldSearch] = useState("");
 
   useEffect(() => {
-    request(
-      `/users/list?search=${searchPhrase}&page=${page}&limit=${PAGINATION_LIMIT}`,
-    ).then(({ data: { users, lastPage } }) => {
-      setUsers(users);
-      setLastPage(lastPage);
-      setLoading(false);
-    });
-  }, [page, searchPhrase]);
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await request(
+          `/users/list?search=${shouldSearch}&page=${page}&limit=${PAGINATION_LIMIT}`,
+        );
+
+        if (res.error) {
+          throw new Error(res.error);
+        }
+
+        const { users, lastPage } = res.data || {};
+
+        setUsers(users);
+        setLastPage(lastPage);
+      } catch (err) {
+        setError(err.message || "Ошибка при загрузке данных");
+        console.log("Fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, shouldSearch]);
 
   const startDelayedSearch = useMemo(() => debounce(setShouldSearch, 2000), []);
 
@@ -33,7 +53,7 @@ export const DBTable = () => {
     startDelayedSearch(!shouldSearch);
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (error) return <div className={styles.error}>Ошибка: {error}</div>;
 
   // const filteredRequests = requests.filter((request) =>
   //   request.name.toLowerCase().includes(search.toLowerCase()),
@@ -49,7 +69,9 @@ export const DBTable = () => {
         // onChange={(e) => setSearch(e.target.value)}
         onChange={onSearch}
       />
-      {users.length > 0 ? (
+      {loading ? (
+        <p>Loading...</p>
+      ) : users.length > 0 ? (
         <table className={styles.table}>
           <thead>
             <tr>
@@ -73,7 +95,7 @@ export const DBTable = () => {
       ) : (
         <div>Заявки отсутствуют</div>
       )}
-      {lastPage > 1 && users.length > 0 && (
+      {!loading && lastPage > 1 && users.length > 0 && (
         <Pagination page={page} setPage={setPage} lastPage={lastPage} />
       )}
     </div>

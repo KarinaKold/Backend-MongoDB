@@ -1,21 +1,22 @@
+import { Button } from "../button/Button";
 import styles from "./Pagination.module.css";
 
 export const Pagination = ({ page, setPage, lastPage }) => {
   return (
     <div className={styles.pagination}>
-      <button disabled={page === 1} onClick={() => setPage(1)}>
+      <Button disabled={page === 1} onClick={() => setPage(1)}>
         В начало
-      </button>
-      <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+      </Button>
+      <Button disabled={page === 1} onClick={() => setPage(page - 1)}>
         Предыдущая
-      </button>
+      </Button>
       <div className={styles.currentPage}>{page}</div>
-      <button disabled={page === lastPage} onClick={() => setPage(page + 1)}>
+      <Button disabled={page === lastPage} onClick={() => setPage(page + 1)}>
         Следующая
-      </button>
-      <button disabled={page === lastPage} onClick={() => setPage(lastPage)}>
+      </Button>
+      <Button disabled={page === lastPage} onClick={() => setPage(lastPage)}>
         В конец
-      </button>
+      </Button>
     </div>
   );
 };
