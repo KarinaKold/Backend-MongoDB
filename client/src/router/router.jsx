@@ -8,8 +8,8 @@ export const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "/", element: <Form /> },
-      { path: "/login", element: <Login /> },
       { path: "/table", element: <DBTable /> },
     ],
   },
+  { path: "/login", element: <Login /> },
 ]);

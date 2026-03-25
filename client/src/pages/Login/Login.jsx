@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -25,7 +25,6 @@ export const Login = () => {
   const {
     register,
     handleSubmit,
-    // trigger,
     formState: { errors, touchedFields },
   } = useForm({
     defaultValues: {
@@ -59,29 +58,32 @@ export const Login = () => {
   };
 
   return (
-    <form
-      className={styles.loginContainer}
-      onSubmit={handleSubmit(handleLogin)}
-    >
-      <h2>Login</h2>
-      <Input
-        label="Электронная почта"
-        id="email"
-        type="email"
-        {...register("email")}
-        error={touchedFields.email ? errors.email?.message : null}
-      />
-      <Input
-        label="Пароль"
-        id="password"
-        type="password"
-        {...register("password")}
-        error={touchedFields.password ? errors.password?.message : null}
-      />
-      <Button type="submit" disabled={loading}>
-        Войти
-      </Button>
-      {serverError && <span className={styles.error}>{serverError}</span>}
-    </form>
+    <>
+      <Link to="/">Home</Link>
+      <form
+        className={styles.loginContainer}
+        onSubmit={handleSubmit(handleLogin)}
+      >
+        <h2>Login</h2>
+        <Input
+          label="Электронная почта"
+          id="email"
+          type="email"
+          {...register("email")}
+          error={touchedFields.email ? errors.email?.message : null}
+        />
+        <Input
+          label="Пароль"
+          id="password"
+          type="password"
+          {...register("password")}
+          error={touchedFields.password ? errors.password?.message : null}
+        />
+        <Button type="submit" disabled={loading}>
+          Войти
+        </Button>
+        {serverError && <span className={styles.error}>{serverError}</span>}
+      </form>
+    </>
   );
 };

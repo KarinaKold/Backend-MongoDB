@@ -13,7 +13,7 @@ router.post("/user", async (req, res) => {
   }
 });
 
-router.get("/list", async (req, res) => {
+router.get("/list", auth, async (req, res) => {
   try {
     const { users, lastPage } = await getUsers(
       req.query.search,
