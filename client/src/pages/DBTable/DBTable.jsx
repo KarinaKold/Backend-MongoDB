@@ -51,21 +51,24 @@ export const DBTable = () => {
     if (sort.field === field) {
       return sort.order === "asc" ? "▲" : "▼";
     }
-    return "↕";
+    return "↕sort";
   };
 
-  const startDelayedSearch = useMemo(() => debounce(setShouldSearch, 2000), []);
+  const startDelayedSearch = useMemo(
+    () =>
+      debounce((value) => {
+        setShouldSearch(value);
+        setPage(1);
+      }, 2000),
+    [],
+  );
 
   const onSearch = ({ target }) => {
     setSearchPhrase(target.value);
-    startDelayedSearch(!shouldSearch);
+    startDelayedSearch(target.value);
   };
 
   if (error) return <div className={styles.error}>Ошибка: {error}</div>;
-
-  // const filteredRequests = requests.filter((request) =>
-  //   request.name.toLowerCase().includes(search.toLowerCase()),
-  // );
 
   return (
     <div className={styles.tableContainer}>
@@ -74,7 +77,6 @@ export const DBTable = () => {
         type="text"
         placeholder="Поиск по заявкам..."
         value={searchPhrase}
-        // onChange={(e) => setSearch(e.target.value)}
         onChange={onSearch}
       />
       {loading ? (

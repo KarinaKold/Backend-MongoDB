@@ -2,7 +2,7 @@ import { NavLink, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAuthEmail } from "../../selectors";
 import styles from "./Header.module.css";
-import { logout } from "../../actions";
+import { logout } from "../../actions/logout";
 
 export const Header = () => {
   const navigate = useNavigate();
