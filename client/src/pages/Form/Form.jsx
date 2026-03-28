@@ -2,8 +2,11 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { useDispatch, useSelector } from "react-redux";
+import { formatPhoneNumber } from "../../utils";
+import { selectUserError, selectUserLoading } from "../../selectors";
+import { addUserAsync } from "../../actions";
 import { Input } from "../../components";
-import { formatPhoneNumber, request } from "../../utils";
 import styles from "./Form.module.css";
 
 const formSchema = yup.object().shape({
@@ -16,8 +19,10 @@ const formSchema = yup.object().shape({
 });
 
 export const Form = () => {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const dispatch = useDispatch();
+  const [successMessage, setSuccessMessage] = useState(null);
+  const loading = useSelector(selectUserLoading);
+  const error = useSelector(selectUserError);
 
   const {
     register,
@@ -49,23 +54,13 @@ export const Form = () => {
     await trigger("phone");
   };
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setMessage("");
-
-    try {
-      const res = await request("/users/user", "POST", data);
-
-      if (res.error) {
-        throw new Error(res.error);
-      }
-
-      setMessage("Заявка успешно отправлена!");
+  const onSubmit = (data) => {
+    setSuccessMessage(null);
+    const res = dispatch(addUserAsync(data));
+    if (res) {
+      setSuccessMessage("Заявка успешно отправлена!");
       reset();
-    } catch (err) {
-      setMessage(`Ошибка: ${err.message || "Не удалось отправить данные"}`);
-    } finally {
-      setLoading(false);
+      setTimeout(() => setSuccessMessage(null), 2000);
     }
   };
 
@@ -99,7 +94,8 @@ export const Form = () => {
       <button className={styles.button} type="submit" disabled={loading}>
         {loading ? "Отправка..." : "Отправить"}
       </button>
-      {message && <p>{message}</p>}
+      {error && <p>{error}</p>}
+      {successMessage && <p>{successMessage}</p>}
     </form>
   );
 };

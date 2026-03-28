@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { selectAuthError, selectAuthLoading } from "../../selectors";
+import { authAsync } from "../../actions";
 import { Button, Input } from "../../components";
 import styles from "./Login.module.css";
-import { request } from "../../utils";
 
 const loginSchema = yup.object().shape({
   email: yup
@@ -15,12 +16,16 @@ const loginSchema = yup.object().shape({
   password: yup
     .string()
     .required("Пароль обязателен")
-    .min(6, "Введите не менее 6 символов"),
+    .matches(/^[\w#%]+$/, "Допускаются буквы, цифры и знаки № %")
+    .min(6, "Введите не менее 6 символов")
+    .max(30, "Неверно заполнен пароль. Максимум 30 символов"),
 });
 
 export const Login = () => {
-  const [loading, setLoading] = useState(false);
-  const [serverError, setServerError] = useState(null);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const loading = useSelector(selectAuthLoading);
+  const serverError = useSelector(selectAuthError);
 
   const {
     register,
@@ -35,26 +40,11 @@ export const Login = () => {
     mode: "onChange",
   });
 
-  const navigate = useNavigate();
-
   const handleLogin = async (data) => {
-    setServerError(null);
-    setLoading(true);
-
-    try {
-      const res = await request("/login", "POST", data);
-
-      if (res.error) {
-        setServerError(res.error);
-        return;
-      }
+    dispatch(authAsync(data)).then((res) => {
+      if (res?.error) return;
       navigate("/table");
-    } catch (err) {
-      setServerError("Ошибка сервера");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   return (

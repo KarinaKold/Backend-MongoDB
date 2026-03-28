@@ -4,7 +4,6 @@ const { JWT_SECRET } = require("../constants");
 
 async function loginOpetator(email, password) {
   const operator = await Operator.findOne({ email });
-
   if (!operator) {
     throw new Error("Operator is not found");
   }

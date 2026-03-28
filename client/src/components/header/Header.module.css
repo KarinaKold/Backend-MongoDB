@@ -10,4 +10,5 @@ header {
 
 .navbar a {
   margin: 20px;
+  cursor: pointer;
 }

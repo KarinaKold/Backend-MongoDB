@@ -1,50 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
-// import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+import { fetchUsersDataAsync } from "../../actions";
+import {
+  selectLastPage,
+  selectUsersData,
+  selectUsersDataError,
+  selectUsersDataLoading,
+} from "../../selectors";
 import { Input, Pagination } from "../../components";
-import { debounce, request } from "../../utils";
+import { debounce } from "../../utils";
 import styles from "./DBTable.module.css";
 
 const PAGINATION_LIMIT = 5;
 
 export const DBTable = () => {
-  // const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const users = useSelector(selectUsersData);
+  const lastPage = useSelector(selectLastPage);
+  const loading = useSelector(selectUsersDataLoading);
+  const error = useSelector(selectUsersDataError);
   const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
   const [searchPhrase, setSearchPhrase] = useState("");
   const [shouldSearch, setShouldSearch] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await request(
-          `/users/list?search=${shouldSearch}&page=${page}&limit=${PAGINATION_LIMIT}`,
-        );
-
-        if (res.error) {
-          throw new Error(res.error);
-        }
-
-        const { users, lastPage } = res.data || {};
-
-        setUsers(users);
-        setLastPage(lastPage);
-      } catch (err) {
-        setError(err.message || "Ошибка при загрузке данных");
-        console.log("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [page, shouldSearch]);
+    dispatch(fetchUsersDataAsync(shouldSearch, page, PAGINATION_LIMIT)).then(
+      (res) => {
+        if (res?.error) navigate("/login");
+      },
+    );
+  }, [dispatch, navigate, page, shouldSearch]);
 
   const startDelayedSearch = useMemo(() => debounce(setShouldSearch, 2000), []);
 
