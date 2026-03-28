@@ -1,19 +1,18 @@
-const Operator = require("../models/Operator");
-const jwt = require("jsonwebtoken");
-const { JWT_SECRET } = require("../constants");
+const { loginOpetator } = require("../services/auth.service");
 
-async function loginOpetator(email, password) {
-  const operator = await Operator.findOne({ email });
-  if (!operator) {
-    throw new Error("Operator is not found");
+async function login(req, res) {
+  try {
+    const token = await loginOpetator(req.body.email, req.body.password);
+    res
+      .cookie("token", token, { httpOnly: true })
+      .send({ error: null, data: req.body.email });
+  } catch (error) {
+    res.send({ error: error.message || "Unknown error" });
   }
-
-  const isPasswordCorrect = password === operator.password;
-  if (!isPasswordCorrect) {
-    throw new Error("Wrong password");
-  }
-
-  return jwt.sign({ email }, JWT_SECRET, { expiresIn: "30d" });
 }
 
-module.exports = { loginOpetator };
+async function logout(req, res) {
+  res.clearCookie("token").send({});
+}
+
+module.exports = { login, logout };

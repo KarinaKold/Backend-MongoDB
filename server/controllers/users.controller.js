@@ -1,34 +1,30 @@
-const User = require("../models/User");
+const { addUser, getUsers } = require("../services/user.service");
 
-async function addUser(user) {
-  const newUser = await User.create(user);
-  return newUser;
+async function add(req, res) {
+  try {
+    const user = await addUser(req.body);
+    res.send({ error: null, data: user });
+  } catch (error) {
+    res.send({ error: error.message || "Unknown error" });
+  }
 }
 
-async function getUsers(
-  search = "",
-  limit = 10,
-  page = 1,
-  sortBy = "createdAt",
-  sortOrder = "desc",
-) {
-  const sort = { [sortBy]: sortOrder === "desc" ? -1 : 1 };
-
-  const [users, count] = await Promise.all([
-    User.find({ name: { $regex: search, $options: "i" } })
-      .limit(limit)
-      .skip((page - 1) * limit)
-      .sort(sort),
-    User.countDocuments({ name: { $regex: search, $options: "i" } }),
-  ]);
-
-  return {
-    users,
-    lastPage: Math.ceil(count / limit),
-  };
+async function getAll(req, res) {
+  try {
+    const { users, lastPage } = await getUsers(
+      req.query.search,
+      req.query.limit,
+      req.query.page,
+      req.query.sortBy,
+      req.query.sortOrder,
+    );
+    res.send({ error: null, data: { users, lastPage } });
+  } catch (error) {
+    res.send({ error: error.message || "Unknown error" });
+  }
 }
 
 module.exports = {
-  addUser,
-  getUsers,
+  add,
+  getAll,
 };
