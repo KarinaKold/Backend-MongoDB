@@ -19,6 +19,8 @@ router.get("/list", auth, async (req, res) => {
       req.query.search,
       req.query.limit,
       req.query.page,
+      req.query.sortBy,
+      req.query.sortOrder,
     );
     res.send({ error: null, data: { users, lastPage } });
   } catch (error) {

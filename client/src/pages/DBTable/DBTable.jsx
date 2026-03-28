@@ -24,14 +24,35 @@ export const DBTable = () => {
   const [page, setPage] = useState(1);
   const [searchPhrase, setSearchPhrase] = useState("");
   const [shouldSearch, setShouldSearch] = useState("");
+  const [sort, setSort] = useState({ field: "createdAt", order: "desc" });
 
   useEffect(() => {
-    dispatch(fetchUsersDataAsync(shouldSearch, page, PAGINATION_LIMIT)).then(
-      (res) => {
-        if (res?.error) navigate("/login");
-      },
-    );
-  }, [dispatch, navigate, page, shouldSearch]);
+    dispatch(
+      fetchUsersDataAsync(
+        shouldSearch,
+        page,
+        PAGINATION_LIMIT,
+        sort.field,
+        sort.order,
+      ),
+    ).then((res) => {
+      if (res?.error) navigate("/login");
+    });
+  }, [dispatch, navigate, page, shouldSearch, sort]);
+
+  const handleSort = (field) => {
+    setSort((prev) => ({
+      field,
+      order: prev.field === field && prev.order === "desc" ? "asc" : "desc",
+    }));
+  };
+
+  const sortStatus = (field) => {
+    if (sort.field === field) {
+      return sort.order === "asc" ? "▲" : "▼";
+    }
+    return "↕";
+  };
 
   const startDelayedSearch = useMemo(() => debounce(setShouldSearch, 2000), []);
 
@@ -62,10 +83,14 @@ export const DBTable = () => {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>ФИО</th>
+              <th onClick={() => handleSort("name")}>
+                ФИО {sortStatus("name")}
+              </th>
               <th>Телефон</th>
               <th>Проблема</th>
-              <th>Дата и время</th>
+              <th onClick={() => handleSort("createdAt")}>
+                Дата и время {sortStatus("createdAt")}
+              </th>
             </tr>
           </thead>
           <tbody>
